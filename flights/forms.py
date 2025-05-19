@@ -28,3 +28,16 @@ class BookingForm(forms.Form):
         'class': 'form-select',
         'id': 'selectTitle'
     }))
+    
+class BookingLookupForm(forms.Form):
+    reference = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class':       'form-control',
+            'id':          'lookupReference',
+            'placeholder': 'Enter your booking reference',
+            'aria-label':  'Reference'
+        })
+    )
+    
+    

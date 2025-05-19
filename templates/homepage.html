@@ -34,7 +34,20 @@
           </li>
           <li class="nav-item"><a href="#" class="nav-link">Book</a></li>
           <li class="nav-item"><a href="#" class="nav-link">About</a></li>
-        </ul>
+          <li class="nav-item"><a href="{% url 'booking_lookup' %}" class="nav-link">Find</a></li>
+          </ul>
+
+
+
+
+
+
+  </div>
+</div>
+            </div>
+        </div>
+        </div>
+        
       </header>
     </div>
         <main>
@@ -251,9 +264,37 @@
                         href="/docs/5.3/getting-started/introduction">getting started guide</a>.</p>
             </div>
         </footer>
-        <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
-            class="astro-vvvwv3sm"></script>
+       {% if lookup_result or lookup_error %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var offcanvasEl = document.getElementById('staticBackdrop');
+    // getOrCreateInstance handles both Bootstrap 4 & 5
+    var bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+    bsOffcanvas.show();
+  });
+</script>
+{% if lookup_result or lookup_error %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var offcanvasEl = document.getElementById('staticBackdrop');
+    var bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+
+    // auto‑open when there’s a result or error
+    bsOffcanvas.show();
+
+    // clear out the containers when the offcanvas hides
+    offcanvasEl.addEventListener('hide.bs.offcanvas', function() {
+      document.getElementById('lookupError').innerHTML = '';
+      document.getElementById('lookupResult').innerHTML = '';
+      // also clear the input if you like:
+      document.getElementById('lookupReference').value = '';
+    });
+  });
+</script>
+{% endif %}
+
+{% endif %}
+
     </body>
 
 </html>

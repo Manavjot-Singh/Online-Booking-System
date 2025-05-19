@@ -1,13 +1,43 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 import uuid
 
 from .models import Flight, Passenger
-from .forms import BookingForm
+from .forms import BookingForm, BookingLookupForm
 
 def home(request):
-   
-    return render(request, 'homepage.html')
+    lookup_form   = BookingLookupForm(request.POST or None)
+    lookup_result = None
+    lookup_error  = None
+
+    # If they submitted the offcanvas lookup form:
+    if request.method == 'POST' and lookup_form.is_valid():
+        ref = lookup_form.cleaned_data['reference'].upper().strip()
+        try:
+            p = Passenger.objects.get(cust_id=ref)
+            f = p.instance
+            lookup_result = {
+                'reference':   p.cust_id,
+                'name':        f"{p.cust_first_name} {p.cust_last_name}",
+                'status':      p.booking_status,
+                'flight_no':   f.schedule.flight_number,
+                'date':        f.date,
+                'origin':      f.schedule.origin,
+                'destination': f.schedule.destination,
+                'dep_time':    f.schedule.dep_time,
+                'arr_time':    f.schedule.arr_time,
+            }
+        except Passenger.DoesNotExist:
+            lookup_error = "No booking found with that reference."
+
+    return render(request, 'homepage.html', {
+        'lookup_form':   lookup_form,
+        'lookup_result': lookup_result,
+        'lookup_error':  lookup_error,
+    })
+
 
 
 def search(request):
@@ -79,3 +109,69 @@ def book_flight(request, flight_id):
         'form':   form,
         'booked': False
     })
+
+def booking_lookup(request):
+    lookup_form   = BookingLookupForm(request.POST or None)
+    lookup_result = None
+    lookup_error  = None
+
+    if request.method == 'POST' and lookup_form.is_valid():
+        ref = lookup_form.cleaned_data['reference'].upper().strip()
+        try:
+            p = Passenger.objects.get(cust_id=ref)
+            f = p.instance
+            lookup_result = {
+                'reference':   p.cust_id,
+                'name':        f"{p.cust_first_name} {p.cust_last_name}",
+                'status':      p.booking_status,
+                'flight_no':   f.schedule.flight_number,
+                'date':        f.date,
+                'origin':      f.schedule.origin,
+                'destination': f.schedule.destination,
+                'dep_time':    f.schedule.dep_time,
+                'arr_time':    f.schedule.arr_time,
+            }
+        except Passenger.DoesNotExist:
+            lookup_error = "No booking found with that reference."
+
+    return render(request, 'details.html', {
+        'lookup_form':   lookup_form,
+        'lookup_result': lookup_result,
+        'lookup_error':  lookup_error,
+    })
+    
+def cancel_booking(request):
+    if request.method == 'POST':
+        ref = request.POST.get('reference', '').upper().strip()
+        try:
+            passenger = Passenger.objects.get(cust_id=ref)
+            if passenger.booking_status != 'cancelled':
+                passenger.booking_status = 'cancelled'
+                passenger.save()
+
+                # free up seat
+                flight = passenger.instance
+                flight.seats_available += 1
+                flight.save()
+
+                # Redirect back with success message (optional)
+                return render(request, 'details.html', {
+                    'lookup_form': BookingLookupForm(),
+                    'lookup_result': None,
+                    'lookup_error': None,
+                    'cancel_success': f"Booking {ref} has been cancelled."
+                })
+            else:
+                return render(request, 'details.html', {
+                    'lookup_form': BookingLookupForm(),
+                    'lookup_result': None,
+                    'lookup_error': f"Booking {ref} was already cancelled."
+                })
+        except Passenger.DoesNotExist:
+            return render(request, 'details.html', {
+                'lookup_form': BookingLookupForm(),
+                'lookup_result': None,
+                'lookup_error': "Booking not found."
+            })
+
+    return HttpResponseRedirect(reverse('booking_lookup'))    
