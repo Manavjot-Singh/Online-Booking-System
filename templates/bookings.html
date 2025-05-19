@@ -39,6 +39,14 @@
       
 
       {% if not booked %}
+      {% if form.non_field_errors %}
+  <div class="alert alert-danger">
+    {% for err in form.non_field_errors %}
+      <p>{{ err }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+
   <form method="post" class="row g-3">
     {% csrf_token %}
     <div class="row g-3">
@@ -73,6 +81,7 @@
   <div class="alert alert-success alert-dismissible fade show mt-4 text-center" role="alert">
     <h4 class="alert-heading">Booking Confirmed!</h4>
     <p>Your reference number is <strong>{{ reference }}</strong>.</p>
+    <p>Total paid: <strong>NZD {{ total_price }}</strong></p>
     <hr>
     <a href="{% url 'search' %}" class="btn btn-outline-success btn-sm">Search Again</a>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -81,7 +90,7 @@
 
 
 
-<p>booked is: {{ booked }}</p>
+
 
 
   </body>

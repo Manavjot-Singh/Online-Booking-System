@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 
 # Create your models here.
@@ -16,6 +17,12 @@ class FlightSchedule(models.Model):
     arr_time = models.TimeField()
     flight_number = models.CharField(max_length=10, unique=True)
     tz_offset = models.DecimalField(max_digits=4, decimal_places=2)
+    price         = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        help_text="Base fare per seat in NZD"
+    )
     
 class Flight(models.Model):
     schedule = models.ForeignKey(FlightSchedule, on_delete=models.CASCADE)
@@ -28,3 +35,10 @@ class Passenger(models.Model):
     cust_last_name = models.CharField(max_length=50)
     cust_id = models.CharField(max_length=20, unique=True)
     booking_status = models.CharField(max_length=20, choices=[('booked', 'Booked'), ('cancelled', 'Cancelled')], default='booked')
+    booking_price   = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Total price paid for this booking"
+    )

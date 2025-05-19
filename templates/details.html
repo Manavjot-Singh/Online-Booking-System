@@ -55,7 +55,7 @@
       <p><strong>Name:</strong> {{ lookup_result.name }}</p>
       <p><strong>Flight:</strong> {{ lookup_result.flight_no }} on {{ lookup_result.date }}</p>
       <p><strong>Route:</strong> {{ lookup_result.origin }} → {{ lookup_result.destination }}</p>
-      <p><strong>Departs:</strong> {{ lookup_result.dep_time }} &nbsp; <strong>Arrives:</strong> {{ lookup_result.arr_time }}</p>
+      <p><strong>Departs:</strong> {{ lookup_result.dep_time|date:"g a" }} &nbsp; <strong>Arrives:</strong> {{ lookup_result.arr_time|date:"g a" }}</p>
       <p><strong>Status:</strong> {{ lookup_result.status }}</p>
 
        <form method="post" action="{% url 'cancel_booking' %}">

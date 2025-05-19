@@ -1,5 +1,7 @@
+import datetime
+from pyexpat.errors import messages
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 import uuid
@@ -48,14 +50,18 @@ def search(request):
 
     if origin and destination and date_str:
        
-        date = timezone.datetime.fromisoformat(date_str).date()
-
+        selected_date = timezone.datetime.fromisoformat(date_str).date()
      
         qs = Flight.objects.filter(
             schedule__origin=origin,
             schedule__destination=destination,
-            date=date
+            date=selected_date
+
         )
+        today = timezone.localdate()
+        if selected_date == today:
+            now_time = timezone.localtime().time()
+            qs = qs.filter(schedule__dep_time__gte=now_time)
 
         
         flights = qs 
@@ -71,12 +77,20 @@ def search(request):
 def book_flight(request, flight_id):
     
     flight = get_object_or_404(Flight, pk=flight_id)
+    dep_dt = datetime.datetime.combine(flight.date, flight.schedule.dep_time)
+    dep_dt = timezone.make_aware(dep_dt)
+    
 
     if request.method == 'POST':
         form = BookingForm(request.POST)
         if form.is_valid():
-            print("🔍 Form is valid")
-
+            price_per_seat = flight.schedule.price
+            total_price    = price_per_seat
+            
+            if dep_dt < timezone.now():
+                messages.error(request, "You can’t book a flight that has already departed.")
+                return redirect('search')
+            
             if flight.seats_available < 1:
                 form.add_error(None, 'No seats left on this flight.')
             else:
@@ -87,7 +101,8 @@ def book_flight(request, flight_id):
                     cust_first_name=form.cleaned_data['first_name'],
                     cust_last_name=form.cleaned_data['last_name'],
                     cust_id=ref,
-                    booking_status='booked'
+                    booking_status='booked',
+                    booking_price=total_price,
                 )
 
                 flight.seats_available -= 1
@@ -95,7 +110,8 @@ def book_flight(request, flight_id):
 
                 return render(request, 'bookings.html', {
                     'booked': True,
-                    'reference': ref
+                    'reference': ref,
+                    'total_price': total_price,
                 })
 
     else:

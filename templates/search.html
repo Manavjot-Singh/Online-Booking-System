@@ -95,6 +95,8 @@
           <th>Departure</th>
           <th>Arrival</th>
           <th>Seats Left</th>
+          <th>Price (NZD)</th>
+
           <th></th>
         </tr>
       </thead>
@@ -102,11 +104,25 @@
       {% for flight in flights %}
         <tr>
           <td>{{ flight.schedule.flight_number }}</td>
-          <td>{{ flight.schedule.dep_time }}</td>
-          <td>{{ flight.schedule.arr_time }}</td>
+          <td>{{ flight.schedule.dep_time|date:"g a" }}</td>
+          <td>{{ flight.schedule.arr_time|date:"g a" }}</td>
           <td>{{ flight.seats_available }}</td>
+          <td>{{ flight.schedule.price }}</td>
+
           <td>
-            <a href="{% url 'book' flight.id %}" class="btn btn-success btn-sm">Book</a>
+            <td>
+  {% if flight.seats_available > 0 %}
+    <a href="{% url 'book' flight.id %}"
+       class="btn btn-success btn-sm">
+      Book
+    </a>
+  {% else %}
+    <button class="btn btn-secondary btn-sm" disabled>
+      Sold out
+    </button>
+  {% endif %}
+</td>
+
           </td>
         </tr>
       {% endfor %}
