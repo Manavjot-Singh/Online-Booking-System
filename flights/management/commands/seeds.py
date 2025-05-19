@@ -22,7 +22,7 @@ class Command(BaseCommand):
                 serial_number=serial_number,
                 manufacturer=manufacturer
             )
-        # origin, destination, aircraft, weekday, dep_time, arr_time, flight_number, tz_offset, price   
+           
         schedules = [
             ("NZNE", "YMML" , "SJ-001", 4 , "10:00", "12:00" , "SJ30i-001", 10.0, Decimal('550.00')),
             ("YMML", "NZNE" , "SJ-001", 6 , "14:00", "20:00" , "SJ30i-002", 12.0, Decimal('550.00')),
@@ -49,7 +49,7 @@ class Command(BaseCommand):
         for origin, dest, ac_serial, weekday, dep, arr, flight_no, tz_off, price in schedules:
             ac = Aircraft.objects.get(serial_number=ac_serial)
 
-            # 3) Use update_or_create on the unique key flight_number
+            
             fs, created = FlightSchedule.objects.update_or_create(
                 flight_number=flight_no,
                 defaults={

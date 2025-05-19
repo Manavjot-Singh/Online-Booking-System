@@ -14,7 +14,7 @@ def home(request):
     lookup_result = None
     lookup_error  = None
 
-    # If they submitted the offcanvas lookup form:
+
     if request.method == 'POST' and lookup_form.is_valid():
         ref = lookup_form.cleaned_data['reference'].upper().strip()
         try:
@@ -165,12 +165,12 @@ def cancel_booking(request):
                 passenger.booking_status = 'cancelled'
                 passenger.save()
 
-                # free up seat
+              
                 flight = passenger.instance
                 flight.seats_available += 1
                 flight.save()
 
-                # Redirect back with success message (optional)
+              
                 return render(request, 'details.html', {
                     'lookup_form': BookingLookupForm(),
                     'lookup_result': None,

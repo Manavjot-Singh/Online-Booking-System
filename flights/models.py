@@ -1,7 +1,6 @@
 from decimal import Decimal
 from django.db import models
 
-# Create your models here.
 class Aircraft(models.Model):
     code = models.CharField(max_length=10)
     capacity = models.PositiveIntegerField()
