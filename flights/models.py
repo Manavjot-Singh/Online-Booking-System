@@ -32,6 +32,7 @@ class Passenger(models.Model):
     instance = models.ForeignKey(Flight, on_delete=models.CASCADE)
     cust_first_name = models.CharField(max_length=50)
     cust_last_name = models.CharField(max_length=50)
+    cust_email = models.EmailField(blank=True, null=True)
     cust_id = models.CharField(max_length=20, unique=True)
     booking_status = models.CharField(max_length=20, choices=[('booked', 'Booked'), ('cancelled', 'Cancelled')], default='booked')
     booking_price   = models.DecimalField(

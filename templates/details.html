@@ -18,30 +18,26 @@
       crossorigin="anonymous"
     ></script>
 
-    <header class="d-flex justify-content-center py-3 mb-4 border-bottom">
+    <header
+      class="d-flex justify-content-between align-items-center py-3 mb-4 border-bottom px-4"
+    >
       <a
         href="{% url 'home' %}"
-        class="d-flex align-items-center me-md-auto text-decoration-none ps-3"
+        class="d-flex align-items-center text-decoration-none"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="28"
           height="28"
           fill="currentColor"
-          class="me-3"
+          class="me-2"
           viewBox="0 0 16 16"
         >
           <path
-            d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572
-             1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5
-             1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918
-             -.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0
-             1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0
-             1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568
-             .14-1.271.428-1.849"
+            d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849"
           />
         </svg>
-        <span class="fs-3">Albany Airlines</span>
+        <span class="fs-4 fw-semibold">Albany Airlines</span>
       </a>
       <ul class="nav nav-pills">
         <li class="nav-item">
@@ -50,65 +46,121 @@
         <li class="nav-item">
           <a href="{% url 'search' %}" class="nav-link">Search</a>
         </li>
-        <li class="nav-item"><a href="#" class="nav-link">About</a></li>
         <li class="nav-item">
-          <a href="{% url 'booking_lookup' %}" class="nav-link">Find</a>
+          <a href="{% url 'about' %}" class="nav-link">About</a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'booking_lookup' %}" class="nav-link active">Find</a>
         </li>
       </ul>
     </header>
 
     <main class="container my-5">
-      <div class="p-5 bg-body-tertiary rounded-3 text-center">
+      <div class="p-5 bg-body-tertiary rounded-3 text-center shadow">
+        <h2 class="mb-4">Lookup Your Booking</h2>
         <form
           method="post"
           action="{% url 'booking_lookup' %}"
           class="row g-3 justify-content-center"
         >
           {% csrf_token %}
-          <div class="col-12">
+          <div class="col-md-6 text-start">
             <label
               for="{{ lookup_form.reference.id_for_label }}"
               class="form-label"
-              >Reference</label
+              >Reference Number</label
             >
             {{ lookup_form.reference }}
           </div>
-          <div class="col-12 mt-3">
-            <button type="submit" class="btn btn-primary">Search</button>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary px-4">
+              Search by Reference
+            </button>
           </div>
         </form>
-
+        <form
+          method="post"
+          action="{% url 'booking_lookup' %}"
+          class="row g-3 justify-content-center mt-4"
+        >
+          {% csrf_token %}
+          <div class="col-md-6 text-start">
+            <label for="{{ email_form.email.id_for_label }}" class="form-label"
+              >Email Address</label
+            >
+            {{ email_form.email }}
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary px-4">
+              Search by Email
+            </button>
+          </div>
+        </form>
         {% if lookup_error %}
         <div class="alert alert-danger mt-4">{{ lookup_error }}</div>
         {% endif %} {% if lookup_result %}
         <hr class="my-4" />
-        <h5>Booking Details</h5>
-        <p><strong>Ref:</strong> {{ lookup_result.reference }}</p>
-        <p><strong>Name:</strong> {{ lookup_result.name }}</p>
-        <p>
-          <strong>Flight:</strong> {{ lookup_result.flight_no }} on {{
-          lookup_result.date }}
-        </p>
-        <p>
-          <strong>Route:</strong> {{ lookup_result.origin }} → {{
-          lookup_result.destination }}
-        </p>
-        <p>
-          <strong>Departs:</strong> {{ lookup_result.dep_time|date:"g a" }}
-          &nbsp; <strong>Arrives:</strong> {{ lookup_result.arr_time|date:"g a"
-          }}
-        </p>
-        <p><strong>Status:</strong> {{ lookup_result.status }}</p>
-
-        <form method="post" action="{% url 'cancel_booking' %}" class="mt-3">
-          {% csrf_token %}
-          <input
-            type="hidden"
-            name="reference"
-            value="{{ lookup_result.reference }}"
-          />
-          <button type="submit" class="btn btn-danger">Cancel Booking</button>
-        </form>
+        <h4 class="mb-4">Booking Details</h4>
+        <div class="text-start mx-auto" style="max-width: 600px">
+          <p><strong>Ref:</strong> {{ lookup_result.reference }}</p>
+          <p><strong>Name:</strong> {{ lookup_result.name }}</p>
+          <p>
+            <strong>Flight:</strong> {{ lookup_result.flight_no }} on {{
+            lookup_result.date }}
+          </p>
+          <p>
+            <strong>Route:</strong> {{ lookup_result.origin }} → {{
+            lookup_result.destination }}
+          </p>
+          <p>
+            <strong>Departs:</strong> {{ lookup_result.dep_time|date:"g:i A" }}
+            (local time) &nbsp;|&nbsp; <strong>Arrives:</strong> {{
+            lookup_result.arr_time|date:"g:i A" }} (local time)
+          </p>
+          <p><strong>Status:</strong> {{ lookup_result.status }}</p>
+          {% if lookup_result.status == "booked" %}
+          <form method="post" action="{% url 'cancel_booking' %}" class="mt-4">
+            {% csrf_token %}
+            <input
+              type="hidden"
+              name="reference"
+              value="{{ lookup_result.reference }}"
+            />
+            <button type="submit" class="btn btn-danger">Cancel Booking</button>
+          </form>
+          {% endif %}
+        </div>
+        {% endif %} {% if email_results %}
+        <hr class="my-4" />
+        <h4 class="mb-4">All Bookings for {{ email_form.email.value }}</h4>
+        <div class="table-responsive mx-auto" style="max-width: 800px">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Reference</th>
+                <th>Date</th>
+                <th>Flight #</th>
+                <th>Route</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in email_results %}
+              <tr>
+                <td>{{ b.reference }}</td>
+                <td>{{ b.date }}</td>
+                <td>{{ b.flight_no }}</td>
+                <td>{{ b.route }}</td>
+                <td class="text-capitalize">{{ b.status }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% elif request.method == 'POST' and email_form.is_bound %}
+        <div class="alert alert-warning mt-4">
+          No bookings found for {{ email_form.email.value }}.
+        </div>
         {% endif %}
       </div>
     </main>

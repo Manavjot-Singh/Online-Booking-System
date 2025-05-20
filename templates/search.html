@@ -53,7 +53,7 @@
           <a href="{% url 'search' %}" class="nav-link">Search</a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">About</a>
+          <a href="{% url 'about' %}" class="nav-link">About</a>
         </li>
         <li class="nav-item">
           <a href="{% url 'booking_lookup' %}" class="nav-link">Find</a>
@@ -126,8 +126,8 @@
         <thead>
           <tr>
             <th>Flight #</th>
-            <th>Departure</th>
-            <th>Arrival</th>
+            <th>Departure(local)</th>
+            <th>Arrival(local)</th>
             <th>Seats Left</th>
             <th>Price (NZD)</th>
             <th></th>
@@ -136,15 +136,15 @@
         <tbody>
           {% for flight in flights %}
           <tr>
-            <td>{{ flight.schedule.flight_number }}</td>
-            <td>{{ flight.schedule.dep_time|date:"g a" }}</td>
-            <td>{{ flight.schedule.arr_time|date:"g a" }}</td>
-            <td>{{ flight.seats_available }}</td>
-            <td>{{ flight.schedule.price }}</td>
+            <td>{{ flight.flight.schedule.flight_number }}</td>
+            <td>{{ flight.dep_time|date:"g:i A" }}</td>
+            <td>{{ flight.arr_time|date:"g:i A" }}</td>
+            <td>{{ flight.flight.seats_available }}</td>
+            <td>{{ flight.flight.schedule.price }}</td>
             <td>
-              {% if flight.seats_available > 0 %}
+              {% if flight.flight.seats_available > 0 %}
               <a
-                href="{% url 'book' flight.id %}"
+                href="{% url 'book' flight.flight.id %}"
                 class="btn btn-success btn-sm"
                 >Book</a
               >

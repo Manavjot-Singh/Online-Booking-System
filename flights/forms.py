@@ -40,4 +40,9 @@ class BookingLookupForm(forms.Form):
         })
     )
     
+class EmailLookupForm(forms.Form):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'you@example.com',
+    }))
     
